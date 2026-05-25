@@ -1,0 +1,42 @@
+{
+  "name": "Suraksha Setu",
+  "short_name": "Suraksha Setu",
+  "description": "Suraksha Setu - Centralized Emergency Response Platform for India",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dc3545",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["emergency", "utilities", "safety"],
+  "shortcuts": [
+    {
+      "name": "Report Incident",
+      "url": "/incidents/report",
+      "description": "Report a disaster"
+    },
+    {
+      "name": "Live Dashboard",
+      "url": "/dashboard",
+      "description": "View live dashboard"
+    },
+    {
+      "name": "AI Safety Guide",
+      "url": "/ai-guide",
+      "description": "Get safety guidance"
+    }
+  ]
+}

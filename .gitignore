@@ -1,0 +1,6 @@
+node_modules/
+database/*.db
+database/sessions.db
+.env
+*.log
+.DS_Store

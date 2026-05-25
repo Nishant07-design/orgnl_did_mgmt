@@ -1,0 +1,62 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-danger sticky-top shadow-sm">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-700" href="/">
+      <span class="brand-icon">🚨</span>
+      <span class="brand-text">Suraksha <span class="text-warning">Setu</span></span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/"><i class="bi bi-house-fill me-1"></i>Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/dashboard"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/incidents"><i class="bi bi-exclamation-triangle-fill me-1"></i>Incidents</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/shelters"><i class="bi bi-house-heart-fill me-1"></i>Shelters</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/map"><i class="bi bi-map-fill me-1"></i>Map</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/alerts"><i class="bi bi-bell-fill me-1"></i>Alerts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link px-3 rounded-pill" href="/ai-guide"><i class="bi bi-robot me-1"></i>AI Guide</a>
+        </li>
+      </ul>
+      <div class="d-flex align-items-center gap-2">
+        <% if (user) { %>
+          <% if (user.role === 'admin') { %>
+            <a href="/alerts/broadcast" class="btn btn-warning btn-sm rounded-pill fw-600">
+              <i class="bi bi-broadcast me-1"></i>Broadcast
+            </a>
+          <% } %>
+          <a href="/incidents/report" class="btn btn-light btn-sm rounded-pill fw-600">
+            <i class="bi bi-plus-circle-fill me-1"></i>Report
+          </a>
+          <div class="dropdown">
+            <button class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i><%= user.name.split(' ')[0] %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><span class="dropdown-item-text text-muted small"><%= user.email %></span></li>
+              <li><span class="dropdown-item-text badge bg-<%= user.role === 'admin' ? 'danger' : 'primary' %> ms-2"><%= user.role %></span></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+        <% } else { %>
+          <a href="/login" class="btn btn-outline-light btn-sm rounded-pill">Login</a>
+          <a href="/register" class="btn btn-light btn-sm rounded-pill fw-600">Register</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

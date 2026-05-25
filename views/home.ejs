@@ -1,0 +1,251 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Alert ticker -->
+<% if (activeAlerts && activeAlerts.length > 0) { %>
+<div class="alert-ticker bg-danger text-white py-2 px-3 d-flex align-items-center gap-2">
+  <span class="badge bg-white text-danger fw-700 animate-pulse">LIVE</span>
+  <div class="ticker-content overflow-hidden flex-1">
+    <div class="ticker-scroll d-flex gap-5">
+      <% activeAlerts.forEach(a => { %>
+        <span class="ticker-item text-nowrap"><i class="bi bi-exclamation-triangle-fill me-1"></i><%= a.title %></span>
+      <% }) %>
+    </div>
+  </div>
+  <a href="/alerts" class="text-white text-decoration-none small ms-2">View All →</a>
+</div>
+<% } %>
+
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container-fluid px-3 px-lg-4 position-relative py-5">
+    <div class="row align-items-center min-vh-50">
+      <div class="col-lg-7 text-white">
+        <div class="mb-3">
+          <span class="badge bg-danger-soft px-3 py-2 rounded-pill fw-500">
+            <span class="status-dot bg-danger me-1"></span> Live Response System
+          </span>
+        </div>
+        <h1 class="display-4 fw-700 mb-3 lh-sm">
+          India's Emergency<br>
+          <span class="text-warning">Response Platform</span>
+        </h1>
+        <p class="lead text-white-70 mb-4 mw-500">
+          Real-time disaster monitoring, incident reporting, and emergency coordination for citizens and authorities across India.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="/incidents/report" class="btn btn-danger btn-lg rounded-pill px-4 fw-600 shadow-lg">
+            <i class="bi bi-plus-circle-fill me-2"></i>Report Incident
+          </a>
+          <a href="/dashboard" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-600">
+            <i class="bi bi-speedometer2 me-2"></i>Live Dashboard
+          </a>
+          <a href="/ai-guide" class="btn btn-warning btn-lg rounded-pill px-4 fw-600">
+            <i class="bi bi-robot me-2"></i>AI Safety Guide
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar bg-dark text-white py-4">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+          <div class="stat-number text-danger fw-700 fs-2" id="stat-active"><%= stats.activeIncidents %></div>
+          <div class="stat-label text-white-50 small">Active Incidents</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+          <div class="stat-number text-success fw-700 fs-2"><%= stats.openShelters %></div>
+          <div class="stat-label text-white-50 small">Open Shelters</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+          <div class="stat-number text-warning fw-700 fs-2"><%= stats.activeAlerts %></div>
+          <div class="stat-label text-white-50 small">Live Alerts</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+          <div class="stat-number text-info fw-700 fs-2"><%= stats.resolvedToday %></div>
+          <div class="stat-label text-white-50 small">Resolved Today</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Incidents -->
+<section class="py-5 bg-body">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="h3 fw-700 mb-1">Recent Incidents</h2>
+        <p class="text-muted small mb-0">Latest reported emergencies across India</p>
+      </div>
+      <a href="/incidents" class="btn btn-outline-danger btn-sm rounded-pill">View All</a>
+    </div>
+    <div class="row g-3">
+      <% recentIncidents.forEach(function(inc) { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card incident-card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="incident-type-icon incident-<%= inc.type %>">
+                <%= inc.type === 'flood' ? '🌊' : inc.type === 'earthquake' ? '🏚️' : inc.type === 'cyclone' ? '🌀' : inc.type === 'fire' ? '🔥' : inc.type === 'landslide' ? '⛰️' : '⚠️' %>
+              </span>
+              <span class="badge severity-badge-<%= inc.severity %>"><%= inc.severity.toUpperCase() %></span>
+            </div>
+            <h5 class="fw-600 mb-1 lh-sm"><%= inc.title %></h5>
+            <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i><%= inc.location %><% if (inc.state) { %>, <%= inc.state %><% } %></p>
+            <% if (inc.description) { %>
+              <p class="text-muted small mb-3 lh-base"><%= inc.description.slice(0, 100) %>...</p>
+            <% } %>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge status-badge-<%= inc.status %>"><%= inc.status %></span>
+              <a href="/incidents/<%= inc.id %>" class="btn btn-sm btn-outline-secondary rounded-pill">Details →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Cards -->
+<section class="py-5 bg-light-subtle">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="text-center mb-5">
+      <h2 class="h2 fw-700 mb-2">Platform Features</h2>
+      <p class="text-muted">Everything you need during a disaster, all in one place</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card text-center p-4 rounded-4 bg-body border-0 shadow-sm hover-lift h-100">
+          <div class="feature-icon bg-danger-subtle text-danger rounded-circle mx-auto mb-3">
+            <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+          </div>
+          <h5 class="fw-600 mb-2">Incident Reporting</h5>
+          <p class="text-muted small">Report emergencies instantly with location, severity, and description. GPS-enabled for accurate tracking.</p>
+          <a href="/incidents/report" class="btn btn-outline-danger btn-sm rounded-pill mt-2">Report Now</a>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card text-center p-4 rounded-4 bg-body border-0 shadow-sm hover-lift h-100">
+          <div class="feature-icon bg-primary-subtle text-primary rounded-circle mx-auto mb-3">
+            <i class="bi bi-speedometer2 fs-3"></i>
+          </div>
+          <h5 class="fw-600 mb-2">Live Dashboard</h5>
+          <p class="text-muted small">Real-time monitoring with auto-refreshing statistics, incident tracking, and rescue operation updates.</p>
+          <a href="/dashboard" class="btn btn-outline-primary btn-sm rounded-pill mt-2">View Dashboard</a>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card text-center p-4 rounded-4 bg-body border-0 shadow-sm hover-lift h-100">
+          <div class="feature-icon bg-success-subtle text-success rounded-circle mx-auto mb-3">
+            <i class="bi bi-house-heart-fill fs-3"></i>
+          </div>
+          <h5 class="fw-600 mb-2">Shelter Finder</h5>
+          <p class="text-muted small">Find nearest emergency shelters with real-time capacity, contact info, and available facilities.</p>
+          <a href="/shelters" class="btn btn-outline-success btn-sm rounded-pill mt-2">Find Shelter</a>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card text-center p-4 rounded-4 bg-body border-0 shadow-sm hover-lift h-100">
+          <div class="feature-icon bg-warning-subtle text-warning rounded-circle mx-auto mb-3">
+            <i class="bi bi-robot fs-3"></i>
+          </div>
+          <h5 class="fw-600 mb-2">AI Safety Guide</h5>
+          <p class="text-muted small">Multilingual AI assistant for disaster-specific guidance in English and Hindi. Available 24/7.</p>
+          <a href="/ai-guide" class="btn btn-outline-warning btn-sm rounded-pill mt-2">Get Guidance</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Emergency Contacts Banner -->
+<section class="py-4 bg-danger text-white">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row align-items-center g-3">
+      <div class="col-md-3 text-center">
+        <p class="small fw-600 text-white-70 mb-1 text-uppercase tracking-wide">National Emergency</p>
+        <a href="tel:112" class="display-6 fw-700 text-white text-decoration-none">112</a>
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="small fw-600 text-white-70 mb-1 text-uppercase tracking-wide">NDRF Helpline</p>
+        <a href="tel:01124363260" class="h4 fw-700 text-white text-decoration-none">011-24363260</a>
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="small fw-600 text-white-70 mb-1 text-uppercase tracking-wide">Disaster Helpline</p>
+        <a href="tel:1077" class="display-6 fw-700 text-white text-decoration-none">1077</a>
+      </div>
+      <div class="col-md-3 text-center">
+        <p class="small fw-600 text-white-70 mb-1 text-uppercase tracking-wide">Ambulance</p>
+        <a href="tel:108" class="display-6 fw-700 text-white text-decoration-none">108</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Map Preview -->
+<section class="py-5 bg-body">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="h3 fw-700 mb-1">Incident Map</h2>
+        <p class="text-muted small mb-0">Geographic view of active incidents across India</p>
+      </div>
+      <a href="/map" class="btn btn-outline-primary btn-sm rounded-pill">Full Map →</a>
+    </div>
+    <div class="map-preview rounded-4 overflow-hidden shadow-sm border" style="height: 380px;">
+      <div id="homeMap" style="height: 100%; width: 100%;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Leaflet JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('homeMap', { zoomControl: true, scrollWheelZoom: false }).setView([22.5, 82.0], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap', maxZoom: 18
+  }).addTo(map);
+
+  fetch('/incidents/api/all').then(r => r.json()).then(incidents => {
+    incidents.forEach(inc => {
+      if (!inc.lat || !inc.lng) return;
+      const color = inc.severity === 'critical' ? '#dc3545' : inc.severity === 'high' ? '#fd7e14' : inc.severity === 'medium' ? '#ffc107' : '#20c997';
+      const marker = L.circleMarker([inc.lat, inc.lng], {
+        radius: inc.severity === 'critical' ? 14 : inc.severity === 'high' ? 11 : 8,
+        fillColor: color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.85
+      }).addTo(map);
+      marker.bindPopup(`<b>${inc.title}</b><br>${inc.location}<br><span style="color:${color}">${inc.severity.toUpperCase()}</span>`);
+    });
+  });
+</script>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" class="d-none">
+  <div class="alert alert-danger alert-dismissible rounded-0 border-0 border-top border-danger mb-0 d-flex align-items-center gap-3">
+    <span class="fs-4">📱</span>
+    <div class="flex-grow-1">
+      <strong>Install Suraksha Setu</strong>
+      <p class="mb-0 small text-muted">Add to your home screen for quick access during emergencies</p>
+    </div>
+    <button id="installBtn" class="btn btn-danger btn-sm rounded-pill px-3">Install</button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

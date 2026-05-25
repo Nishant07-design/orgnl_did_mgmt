@@ -1,0 +1,144 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container px-3 py-5" style="max-width: 720px;">
+  <div class="text-center mb-5">
+    <div class="fs-1 mb-2">🚨</div>
+    <h1 class="h2 fw-700 mb-2">Report an Incident</h1>
+    <p class="text-muted">Report a disaster or emergency to alert authorities and help coordinate response.</p>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-4">
+      <i class="bi bi-exclamation-circle-fill me-2"></i><%= error %>
+    </div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+      <form action="/incidents/report" method="POST" id="reportForm">
+        <div class="row g-3">
+          <!-- Title -->
+          <div class="col-12">
+            <label class="form-label fw-500">Incident Title <span class="text-danger">*</span></label>
+            <input type="text" name="title" class="form-control rounded-3" placeholder="e.g., Flash Flood in Navi Mumbai" required>
+          </div>
+
+          <!-- Type & Severity -->
+          <div class="col-md-6">
+            <label class="form-label fw-500">Disaster Type <span class="text-danger">*</span></label>
+            <select name="type" class="form-select rounded-3" required>
+              <option value="">Select type...</option>
+              <option value="flood">🌊 Flood</option>
+              <option value="earthquake">🏚️ Earthquake</option>
+              <option value="cyclone">🌀 Cyclone / Storm</option>
+              <option value="fire">🔥 Fire / Wildfire</option>
+              <option value="landslide">⛰️ Landslide</option>
+              <option value="tsunami">🌊 Tsunami</option>
+              <option value="drought">🌵 Drought</option>
+              <option value="industrial">🏭 Industrial Accident</option>
+              <option value="heatwave">🌡️ Heat Wave</option>
+              <option value="other">⚠️ Other</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">Severity Level <span class="text-danger">*</span></label>
+            <select name="severity" class="form-select rounded-3" required>
+              <option value="low">🟢 Low - Minor incident</option>
+              <option value="medium" selected>🟡 Medium - Moderate impact</option>
+              <option value="high">🟠 High - Significant damage</option>
+              <option value="critical">🔴 Critical - Life threatening</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div class="col-12">
+            <label class="form-label fw-500">Description</label>
+            <textarea name="description" class="form-control rounded-3" rows="3" placeholder="Describe the situation, what you see, immediate dangers..."></textarea>
+          </div>
+
+          <!-- Location -->
+          <div class="col-12">
+            <label class="form-label fw-500">Location / Address <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="text" name="location" id="locationInput" class="form-control rounded-start-3" placeholder="e.g., Near Ghatkopar Railway Station, Mumbai" required>
+              <button type="button" class="btn btn-outline-primary rounded-end-3" id="geoBtn" title="Use my current location">
+                <i class="bi bi-geo-alt-fill"></i> Locate Me
+              </button>
+            </div>
+            <input type="hidden" name="lat" id="latInput">
+            <input type="hidden" name="lng" id="lngInput">
+            <div id="geoStatus" class="form-text"></div>
+          </div>
+
+          <!-- District & State -->
+          <div class="col-md-6">
+            <label class="form-label fw-500">District</label>
+            <input type="text" name="district" class="form-control rounded-3" placeholder="e.g., Mumbai Suburban">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">State</label>
+            <select name="state" class="form-select rounded-3">
+              <option value="">Select State</option>
+              <% ['Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jammu & Kashmir','Jharkhand','Karnataka','Kerala','Ladakh','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttarakhand','Uttar Pradesh','West Bengal'].forEach(s => { %>
+                <option value="<%= s %>"><%= s %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Affected People -->
+          <div class="col-md-6">
+            <label class="form-label fw-500">Estimated People Affected</label>
+            <input type="number" name="affected_people" class="form-control rounded-3" placeholder="0" min="0">
+          </div>
+
+          <!-- Warning badge -->
+          <div class="col-12">
+            <div class="alert alert-warning rounded-3 border-0 d-flex gap-2 align-items-start mb-0">
+              <i class="bi bi-info-circle-fill mt-1"></i>
+              <div class="small">
+                <strong>Critical or High severity incidents</strong> will automatically generate an alert for authorities.
+                For immediate life-threatening emergencies, call <strong>112</strong> first.
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <button type="submit" class="btn btn-danger btn-lg w-100 rounded-3 fw-600">
+              <i class="bi bi-send-fill me-2"></i>Submit Report
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('geoBtn').addEventListener('click', function() {
+  const btn = this;
+  const status = document.getElementById('geoStatus');
+  if (!navigator.geolocation) {
+    status.textContent = 'Geolocation not supported by your browser.';
+    return;
+  }
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Locating...';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      document.getElementById('latInput').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('lngInput').value = pos.coords.longitude.toFixed(6);
+      status.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Location captured: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}</span>`;
+      btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Located';
+      btn.classList.replace('btn-outline-primary', 'btn-success');
+    },
+    err => {
+      status.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i>Could not get location. Please enter manually.</span>';
+      btn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Locate Me';
+      btn.disabled = false;
+    }
+  );
+});
+</script>
+
+<%- include('../partials/footer') %>

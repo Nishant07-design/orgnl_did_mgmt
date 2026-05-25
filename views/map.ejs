@@ -1,0 +1,159 @@
+<%- include('partials/head') %>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<%- include('partials/navbar') %>
+
+<div class="container-fluid px-0">
+  <div class="d-flex" style="height: calc(100vh - 64px);">
+    <!-- Sidebar -->
+    <div class="map-sidebar bg-body border-end overflow-auto" style="width: 320px; min-width: 280px;">
+      <div class="p-3">
+        <h5 class="fw-700 mb-3"><i class="bi bi-map-fill text-danger me-2"></i>Incident Map</h5>
+        <!-- Legend -->
+        <div class="card border-0 bg-light rounded-3 p-3 mb-3">
+          <h6 class="fw-600 small mb-2">Severity Legend</h6>
+          <div class="d-flex flex-column gap-1">
+            <span class="d-flex align-items-center gap-2"><span class="legend-dot bg-danger"></span><span class="small">Critical</span></span>
+            <span class="d-flex align-items-center gap-2"><span class="legend-dot bg-warning"></span><span class="small">High</span></span>
+            <span class="d-flex align-items-center gap-2"><span class="legend-dot bg-primary"></span><span class="small">Medium</span></span>
+            <span class="d-flex align-items-center gap-2"><span class="legend-dot bg-success"></span><span class="small">Low</span></span>
+            <span class="d-flex align-items-center gap-2"><span class="legend-dot bg-info"></span><span class="small">Shelter</span></span>
+          </div>
+        </div>
+        <!-- Filter -->
+        <div class="mb-3">
+          <select class="form-select form-select-sm rounded-pill" id="typeFilter">
+            <option value="">All Types</option>
+            <option value="flood">🌊 Flood</option>
+            <option value="earthquake">🏚️ Earthquake</option>
+            <option value="cyclone">🌀 Cyclone</option>
+            <option value="fire">🔥 Fire</option>
+            <option value="landslide">⛰️ Landslide</option>
+          </select>
+        </div>
+        <!-- Incident list -->
+        <h6 class="fw-600 small text-muted text-uppercase mb-2">Active Incidents</h6>
+        <div id="sidebarList" class="d-flex flex-column gap-2"></div>
+        <div class="mt-3">
+          <h6 class="fw-600 small text-muted text-uppercase mb-2">Shelters</h6>
+          <div id="sidebarShelters" class="d-flex flex-column gap-2"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Map -->
+    <div id="mainMap" style="flex: 1; height: 100%;"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('mainMap').setView([22.5, 82.0], 5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors', maxZoom: 18
+}).addTo(map);
+
+let allIncidents = [], incidentMarkers = [], shelterMarkers = [];
+
+function severityColor(s) {
+  return s === 'critical' ? '#dc3545' : s === 'high' ? '#fd7e14' : s === 'medium' ? '#0d6efd' : '#198754';
+}
+
+function typeEmoji(t) {
+  return t === 'flood' ? '🌊' : t === 'earthquake' ? '🏚️' : t === 'cyclone' ? '🌀' : t === 'fire' ? '🔥' : t === 'landslide' ? '⛰️' : '⚠️';
+}
+
+function renderIncidents(incidents) {
+  incidentMarkers.forEach(m => map.removeLayer(m));
+  incidentMarkers = [];
+  const list = document.getElementById('sidebarList');
+  list.innerHTML = '';
+
+  incidents.forEach(inc => {
+    if (inc.lat && inc.lng) {
+      const color = severityColor(inc.severity);
+      const marker = L.circleMarker([inc.lat, inc.lng], {
+        radius: inc.severity === 'critical' ? 16 : inc.severity === 'high' ? 12 : 9,
+        fillColor: color, color: '#fff', weight: 2.5, opacity: 1, fillOpacity: 0.9
+      }).addTo(map);
+      marker.bindPopup(`
+        <div style="min-width:200px;">
+          <b style="font-size:14px;">${inc.title}</b><br>
+          <span style="color:#666;font-size:12px;">${inc.location}</span><br>
+          <span style="background:${color};color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">${inc.severity.toUpperCase()}</span>
+          <span style="margin-left:4px;font-size:11px;color:#666;">${inc.type}</span><br>
+          ${inc.description ? `<div style="font-size:11px;margin-top:6px;color:#555;">${inc.description.slice(0,100)}...</div>` : ''}
+          <a href="/incidents/${inc.id}" style="display:block;margin-top:8px;font-size:12px;color:#dc3545;">View Details →</a>
+        </div>
+      `);
+      incidentMarkers.push(marker);
+
+      marker.on('click', () => {
+        document.querySelectorAll('.sidebar-incident-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('si-' + inc.id)?.classList.add('active');
+      });
+    }
+
+    const item = document.createElement('div');
+    item.id = 'si-' + inc.id;
+    item.className = 'sidebar-incident-item rounded-3 p-2 cursor-pointer';
+    item.style.cssText = `border-left: 3px solid ${severityColor(inc.severity)}; background: #f8f9fa;`;
+    item.innerHTML = `
+      <div class="fw-600 small">${typeEmoji(inc.type)} ${inc.title}</div>
+      <div style="font-size:0.72rem;color:#666;"><i class="bi bi-geo-alt"></i> ${inc.location}</div>
+    `;
+    if (inc.lat && inc.lng) {
+      item.addEventListener('click', () => {
+        map.flyTo([inc.lat, inc.lng], 10, { duration: 0.8 });
+        document.querySelectorAll('.sidebar-incident-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+      });
+    }
+    list.appendChild(item);
+  });
+}
+
+function loadShelters() {
+  fetch('/shelters/api/all').then(r => r.json()).then(shelters => {
+    const list = document.getElementById('sidebarShelters');
+    list.innerHTML = '';
+    shelterMarkers.forEach(m => map.removeLayer(m));
+    shelterMarkers = [];
+    shelters.forEach(s => {
+      if (s.lat && s.lng) {
+        const pct = s.capacity > 0 ? (s.current_occupancy / s.capacity * 100).toFixed(0) : 0;
+        const color = s.status === 'full' ? '#6c757d' : '#0dcaf0';
+        const marker = L.circleMarker([s.lat, s.lng], {
+          radius: 9, fillColor: color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.85
+        }).addTo(map);
+        marker.bindPopup(`
+          <b>${s.name}</b><br>
+          <span style="font-size:12px;">${s.address}</span><br>
+          <span style="font-size:12px;">Capacity: ${s.current_occupancy}/${s.capacity} (${pct}% full)</span><br>
+          <span style="font-size:12px;">📞 ${s.contact}</span><br>
+          <span style="background:${color};color:#fff;padding:2px 8px;border-radius:20px;font-size:11px;">${s.status.toUpperCase()}</span>
+        `);
+        shelterMarkers.push(marker);
+      }
+      const item = document.createElement('div');
+      item.className = 'rounded-3 p-2 mb-1';
+      item.style.cssText = 'background:#e8f4f8;border-left:3px solid #0dcaf0;';
+      item.innerHTML = `<div class="fw-600 small">🏠 ${s.name}</div><div style="font-size:0.72rem;color:#666;">${s.district || ''}, ${s.state}</div>`;
+      if (s.lat && s.lng) item.addEventListener('click', () => map.flyTo([s.lat, s.lng], 11));
+      item.style.cursor = 'pointer';
+      list.appendChild(item);
+    });
+  });
+}
+
+fetch('/incidents/api/all').then(r => r.json()).then(data => {
+  allIncidents = data;
+  renderIncidents(data);
+  loadShelters();
+});
+
+document.getElementById('typeFilter').addEventListener('change', function() {
+  const val = this.value;
+  renderIncidents(val ? allIncidents.filter(i => i.type === val) : allIncidents);
+});
+</script>
+
+<%- include('partials/footer') %>

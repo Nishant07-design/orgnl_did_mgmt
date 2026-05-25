@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Admin NDRF",
+    "email": "admin@ndrf.gov.in",
+    "password": "$2a$10$LG8xL0Q7OXojcj9dY9Ve6.oUWjCxR7aMzOR6wsMdtVqc1wsdafw3y",
+    "role": "admin",
+    "phone": "011-24363260",
+    "state": "Delhi",
+    "created_at": "2026-05-25T18:29:25.122Z"
+  },
+  {
+    "id": 2,
+    "name": "Rahul Sharma",
+    "email": "rahul@citizen.in",
+    "password": "$2a$10$l/59rDkZdNLwm88FKs76M.iR5UqOUr.wExongUXzvsl271bBuR3Vq",
+    "role": "citizen",
+    "phone": "9876543210",
+    "state": "Maharashtra",
+    "created_at": "2026-05-25T18:29:25.123Z"
+  },
+  {
+    "id": 3,
+    "name": "Nishant",
+    "email": "nb@gmail.com",
+    "password": "$2a$10$dooR1qq2lXE4YHt18y4V7eCt97PWoGbUUCINJIG70.zOhwZ23iPXS",
+    "phone": "9385774833",
+    "state": "Karnataka",
+    "created_at": "2026-05-25T19:19:22.914Z",
+    "updated_at": "2026-05-25T19:19:22.914Z"
+  }
+]

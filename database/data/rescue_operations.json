@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "incident_id": 1,
+    "team_name": "NDRF Team Alpha",
+    "team_type": "NDRF",
+    "personnel": 45,
+    "status": "active",
+    "notes": "Boat rescue operations ongoing in Kaziranga sector",
+    "created_at": "2026-05-25T18:29:25.156Z",
+    "updated_at": "2026-05-25T18:29:25.156Z"
+  },
+  {
+    "id": 2,
+    "incident_id": 1,
+    "team_name": "SDRF Assam Unit 3",
+    "team_type": "SDRF",
+    "personnel": 30,
+    "status": "active",
+    "notes": "Distributing relief materials at Jorhat camp",
+    "created_at": "2026-05-25T18:29:25.156Z",
+    "updated_at": "2026-05-25T18:29:25.156Z"
+  },
+  {
+    "id": 3,
+    "incident_id": 2,
+    "team_name": "NDRF Gujarat 04",
+    "team_type": "NDRF",
+    "personnel": 80,
+    "status": "active",
+    "notes": "Coastal evacuation of Dwarka district",
+    "created_at": "2026-05-25T18:29:25.156Z",
+    "updated_at": "2026-05-25T18:29:25.156Z"
+  },
+  {
+    "id": 4,
+    "incident_id": 3,
+    "team_name": "BRO Team Uttarkashi",
+    "team_type": "BRO",
+    "personnel": 25,
+    "status": "active",
+    "notes": "Road clearing operations NH-34 landslide point",
+    "created_at": "2026-05-25T18:29:25.156Z",
+    "updated_at": "2026-05-25T18:29:25.156Z"
+  },
+  {
+    "id": 5,
+    "incident_id": 4,
+    "team_name": "NDRF Mumbai Fast Response",
+    "team_type": "NDRF",
+    "personnel": 20,
+    "status": "active",
+    "notes": "Search and rescue at Kurla collapse site",
+    "created_at": "2026-05-25T18:29:25.156Z",
+    "updated_at": "2026-05-25T18:29:25.156Z"
+  }
+]

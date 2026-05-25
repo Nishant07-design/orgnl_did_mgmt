@@ -1,0 +1,54 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container px-3 py-5" style="max-width: 440px;">
+  <div class="text-center mb-5">
+    <div class="fs-1 mb-2">🔐</div>
+    <h1 class="h2 fw-700 mb-2">Welcome Back</h1>
+    <p class="text-muted">Sign in to your Suraksha Setu account</p>
+    <% if (registered) { %>
+      <div class="alert alert-success rounded-3 border-0 small">
+        <i class="bi bi-check-circle-fill me-1"></i>Registration successful! Please sign in.
+      </div>
+    <% } %>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-4">
+      <i class="bi bi-exclamation-circle-fill me-2"></i><%= error %>
+    </div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+      <form action="/login" method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-500">Email Address</label>
+          <input type="email" name="email" class="form-control rounded-3" placeholder="you@example.com" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-500">Password</label>
+          <input type="password" name="password" class="form-control rounded-3" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-danger w-100 rounded-3 fw-600 btn-lg">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <p class="text-muted small mb-2">Don't have an account? <a href="/register" class="text-danger fw-500">Register</a></p>
+  </div>
+
+  <!-- Demo credentials -->
+  <div class="card border-0 bg-info-subtle rounded-4 mt-3 p-3">
+    <h6 class="fw-600 small mb-2">Demo Accounts</h6>
+    <div class="d-flex flex-column gap-1">
+      <div class="small"><strong>Admin:</strong> admin@ndrf.gov.in / admin123</div>
+      <div class="small"><strong>Citizen:</strong> rahul@citizen.in / citizen123</div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

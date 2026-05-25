@@ -1,0 +1,93 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container-fluid px-3 px-lg-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h2 fw-700 mb-1"><i class="bi bi-bell-fill text-warning me-2"></i>Emergency Alerts</h1>
+      <p class="text-muted small mb-0">Active broadcasts and warnings for India</p>
+    </div>
+    <% if (user && user.role === 'admin') { %>
+      <a href="/alerts/broadcast" class="btn btn-danger rounded-pill px-4">
+        <i class="bi bi-broadcast me-2"></i>Broadcast Alert
+      </a>
+    <% } %>
+  </div>
+
+  <% if (alerts.length === 0) { %>
+    <div class="text-center py-5">
+      <div class="fs-1 mb-3">✅</div>
+      <h4 class="fw-600 text-success">No Active Alerts</h4>
+      <p class="text-muted">All clear! No emergency alerts at this time.</p>
+    </div>
+  <% } %>
+
+  <div class="row g-3">
+    <% alerts.forEach(a => { %>
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-4 alert-card-<%= a.severity %>">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div class="flex-grow-1">
+              <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                <span class="severity-icon-lg">
+                  <%= a.severity === 'critical' ? '🔴' : a.severity === 'high' ? '🟠' : a.severity === 'medium' ? '🟡' : 'ℹ️' %>
+                </span>
+                <h5 class="fw-700 mb-0"><%= a.title %></h5>
+                <span class="badge severity-badge-<%= a.severity %> px-3 py-2"><%= a.severity.toUpperCase() %></span>
+                <% if (a.type) { %><span class="badge bg-secondary-subtle text-secondary text-capitalize"><%= a.type %></span><% } %>
+              </div>
+              <p class="mb-2 lh-base"><%= a.message %></p>
+              <div class="d-flex flex-wrap gap-2">
+                <% if (a.state) { %>
+                  <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt me-1"></i><%= a.state %></span>
+                <% } %>
+                <% if (a.district) { %>
+                  <span class="badge bg-light text-dark border"><%= a.district %></span>
+                <% } %>
+                <span class="text-muted small">
+                  <i class="bi bi-clock me-1"></i><%= new Date(a.created_at).toLocaleString('en-IN') %>
+                </span>
+                <% if (a.creator_name) { %>
+                  <span class="text-muted small"><i class="bi bi-person me-1"></i><%= a.creator_name %></span>
+                <% } %>
+              </div>
+            </div>
+            <div class="d-flex flex-column gap-2 align-items-end">
+              <% if (a.severity === 'critical' || a.severity === 'high') { %>
+                <a href="tel:112" class="btn btn-danger btn-sm rounded-pill text-nowrap">
+                  <i class="bi bi-telephone-fill me-1"></i>Call 112
+                </a>
+              <% } %>
+              <% if (user && user.role === 'admin') { %>
+                <form action="/alerts/<%= a.id %>/dismiss" method="POST">
+                  <button class="btn btn-outline-secondary btn-sm rounded-pill">Dismiss</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <!-- Subscribe info -->
+  <div class="card border-0 bg-primary-subtle rounded-4 mt-4 p-4">
+    <div class="d-flex gap-3 align-items-center">
+      <div class="fs-2">📢</div>
+      <div>
+        <h6 class="fw-600 mb-1">Stay Informed</h6>
+        <p class="small text-muted mb-0">
+          Alerts are broadcast in real-time. This page auto-refreshes every 30 seconds.
+          For SMS alerts, follow your state's SDRF on official channels.
+          IMD Weather: <a href="https://mausam.imd.gov.in" target="_blank" class="text-primary">mausam.imd.gov.in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>setTimeout(() => location.reload(), 30000);</script>
+
+<%- include('../partials/footer') %>

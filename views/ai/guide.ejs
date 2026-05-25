@@ -1,0 +1,209 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container-fluid px-3 px-lg-4 py-4">
+  <div class="row g-4">
+    <!-- Chat Panel -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 h-100" style="min-height: 70vh;">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <div class="d-flex align-items-center gap-3">
+            <div class="ai-avatar rounded-circle bg-warning d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+              <span class="fs-5">🤖</span>
+            </div>
+            <div>
+              <h5 class="fw-700 mb-0">AI Safety Guide</h5>
+              <p class="text-muted small mb-0">Disaster guidance in English & Hindi</p>
+            </div>
+            <div class="ms-auto">
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm rounded-pill px-3 lang-btn active" data-lang="en" id="btn-en">English</button>
+                <button class="btn btn-sm rounded-pill px-3 lang-btn" data-lang="hi" id="btn-hi">हिंदी</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body px-4 py-3 d-flex flex-column" style="flex:1;">
+          <!-- Chat messages -->
+          <div id="chatMessages" class="chat-messages flex-grow-1 overflow-auto mb-3 pe-1">
+            <div class="chat-bubble bot mb-3">
+              <div class="chat-bubble-inner">
+                <p class="mb-1">Namaste! I'm your AI Safety Guide 🇮🇳</p>
+                <p class="mb-1">I can help you with disaster safety in <strong>English</strong> and <strong>हिंदी</strong>.</p>
+                <p class="mb-0 small">Ask me about: <em>flood, earthquake, cyclone, fire, landslide, heatwave, emergency contacts, or kit</em></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick buttons -->
+          <div class="quick-buttons mb-3 d-flex flex-wrap gap-2">
+            <button class="btn btn-sm btn-outline-primary rounded-pill quick-ask" data-q="flood safety tips">🌊 Flood</button>
+            <button class="btn btn-sm btn-outline-danger rounded-pill quick-ask" data-q="earthquake safety">🏚️ Earthquake</button>
+            <button class="btn btn-sm btn-outline-info rounded-pill quick-ask" data-q="cyclone warning safety">🌀 Cyclone</button>
+            <button class="btn btn-sm btn-outline-warning rounded-pill quick-ask" data-q="fire safety">🔥 Fire</button>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill quick-ask" data-q="emergency contacts helpline">📞 Contacts</button>
+            <button class="btn btn-sm btn-outline-success rounded-pill quick-ask" data-q="emergency kit checklist">🎒 Kit</button>
+          </div>
+
+          <!-- Input -->
+          <div class="input-group">
+            <input type="text" id="chatInput" class="form-control rounded-start-3 border-end-0"
+              placeholder="Ask anything about disaster safety..." autocomplete="off">
+            <button class="btn btn-danger rounded-end-3 px-4" id="sendBtn">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info sidebar -->
+    <div class="col-lg-5">
+      <!-- Emergency Numbers -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-3"><i class="bi bi-telephone-fill text-danger me-2"></i>Emergency Numbers</h6>
+          <div class="d-flex flex-column gap-2">
+            <% const contacts = [
+              {name: 'National Emergency', number: '112', color: 'danger'},
+              {name: 'NDRF Control Room', number: '011-24363260', color: 'primary'},
+              {name: 'Fire Brigade', number: '101', color: 'warning'},
+              {name: 'Ambulance', number: '108', color: 'success'},
+              {name: 'Disaster Helpline', number: '1077', color: 'info'},
+            ]; %>
+            <% contacts.forEach(c => { %>
+            <a href="tel:<%= c.number.replace(/\D/g,'') %>" class="d-flex align-items-center justify-content-between p-2 rounded-3 bg-<%= c.color %>-subtle text-decoration-none hover-lift">
+              <span class="fw-500 small text-dark"><%= c.name %></span>
+              <span class="badge bg-<%= c.color %> rounded-pill fs-6 px-3"><%= c.number %></span>
+            </a>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disaster Types Quick Guide -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h6 class="fw-700 mb-3"><i class="bi bi-shield-fill-check text-success me-2"></i>Disaster Quick Guide</h6>
+          <div class="accordion accordion-flush" id="guideAccordion">
+            <% const types = [
+              {id:'flood', emoji:'🌊', name:'Flood / बाढ़', key: 'flood'},
+              {id:'eq', emoji:'🏚️', name:'Earthquake / भूकंप', key: 'earthquake'},
+              {id:'cy', emoji:'🌀', name:'Cyclone / चक्रवात', key: 'cyclone'},
+              {id:'fire', emoji:'🔥', name:'Fire / आग', key: 'fire'},
+              {id:'ls', emoji:'⛰️', name:'Landslide / भूस्खलन', key: 'landslide'},
+              {id:'hw', emoji:'🌡️', name:'Heat Wave / लू', key: 'heatwave'},
+            ]; %>
+            <% types.forEach((t,i) => { %>
+            <div class="accordion-item border-0 border-bottom">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed py-2 px-0 bg-transparent fw-500 small" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#acc<%= t.id %>">
+                  <%= t.emoji %> <%= t.name %>
+                </button>
+              </h2>
+              <div id="acc<%= t.id %>" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                <div class="accordion-body px-0 pb-3 pt-0">
+                  <% KB[t.key].en.safety.slice(0,3).forEach(tip => { %>
+                    <p class="small text-muted mb-1">• <%= tip %></p>
+                  <% }) %>
+                  <button class="btn btn-xs btn-outline-primary rounded-pill mt-1 quick-ask" style="font-size:0.75rem;padding:2px 10px;"
+                    data-q="<%= t.key %> safety tips">Ask AI →</button>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let lang = 'en';
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    lang = btn.dataset.lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active', 'btn-warning', 'btn-outline-secondary'));
+    btn.classList.add('active');
+    if (lang === 'hi') {
+      document.getElementById('btn-hi').classList.add('btn-warning');
+      document.getElementById('btn-en').classList.add('btn-outline-secondary');
+    } else {
+      document.getElementById('btn-en').classList.add('btn-warning');
+      document.getElementById('btn-hi').classList.add('btn-outline-secondary');
+    }
+  });
+});
+
+document.querySelectorAll('.quick-ask').forEach(btn => {
+  btn.addEventListener('click', () => sendMessage(btn.dataset.q));
+});
+
+document.getElementById('sendBtn').addEventListener('click', () => {
+  const val = document.getElementById('chatInput').value.trim();
+  if (val) sendMessage(val);
+});
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    if (val) sendMessage(val);
+  }
+});
+
+function addMsg(content, isBot = true) {
+  const el = document.createElement('div');
+  el.className = `chat-bubble ${isBot ? 'bot' : 'user'} mb-3`;
+  el.innerHTML = `<div class="chat-bubble-inner">${content}</div>`;
+  const msgs = document.getElementById('chatMessages');
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendMessage(question) {
+  document.getElementById('chatInput').value = '';
+  addMsg(`<span>${question}</span>`, false);
+  addMsg('<span class="typing-indicator"><span></span><span></span><span></span></span>', true);
+
+  fetch('/ai-guide/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question, lang })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.querySelectorAll('.typing-indicator').forEach(el => el.closest('.chat-bubble')?.remove());
+
+    if (data.category === 'contacts') {
+      let html = `<p class="fw-600 mb-2">${lang === 'hi' ? '🆘 आपातकालीन संपर्क नंबर:' : '🆘 Emergency Contact Numbers:'}</p>`;
+      data.contacts.forEach(c => {
+        html += `<div class="d-flex justify-content-between align-items-center mb-1 p-2 bg-light rounded-2">
+          <span class="small">${c.name}</span>
+          <a href="tel:${c.number.replace(/\D/g,'')}" class="badge bg-danger rounded-pill fs-6">${c.number}</a>
+        </div>`;
+      });
+      addMsg(html);
+    } else if (data.response) {
+      const r = data.response;
+      let html = `<p class="fw-600 mb-2">${lang === 'hi' ? '⚠️ सुरक्षा निर्देश:' : '⚠️ Safety Instructions:'}</p>`;
+      html += '<ul class="mb-2 ps-3">';
+      r.safety.forEach(t => { html += `<li class="mb-1 small">${t}</li>`; });
+      html += '</ul>';
+      if (r.evacuation) html += `<p class="small mb-1"><strong>${lang === 'hi' ? 'निकासी:' : 'Evacuation:'}</strong> ${r.evacuation}</p>`;
+      if (r.kit) html += `<p class="small mb-0"><strong>${lang === 'hi' ? 'किट:' : 'Kit:'}</strong> ${r.kit}</p>`;
+      addMsg(html);
+    } else {
+      addMsg(`<p class="mb-0">${data.message}</p>`);
+    }
+  })
+  .catch(() => {
+    document.querySelectorAll('.typing-indicator').forEach(el => el.closest('.chat-bubble')?.remove());
+    addMsg('<p class="mb-0 text-danger">Sorry, something went wrong. Please try again.</p>');
+  });
+}
+</script>
+
+<%- include('../partials/footer') %>

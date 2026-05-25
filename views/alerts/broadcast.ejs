@@ -1,0 +1,75 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container px-3 py-5" style="max-width: 680px;">
+  <div class="text-center mb-5">
+    <div class="fs-1 mb-2">📢</div>
+    <h1 class="h2 fw-700 mb-2">Broadcast Emergency Alert</h1>
+    <p class="text-muted">Send an official emergency alert to all users of the platform.</p>
+  </div>
+
+  <% if (error) { %>
+    <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-4"><i class="bi bi-exclamation-circle-fill me-2"></i><%= error %></div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+      <form action="/alerts/broadcast" method="POST">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-500">Alert Title <span class="text-danger">*</span></label>
+            <input type="text" name="title" class="form-control rounded-3" placeholder="e.g., RED ALERT - Assam Floods" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-500">Message <span class="text-danger">*</span></label>
+            <textarea name="message" class="form-control rounded-3" rows="4" placeholder="Detailed alert message..." required></textarea>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">Severity</label>
+            <select name="severity" class="form-select rounded-3">
+              <option value="info">ℹ️ Info</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="high">🟠 High</option>
+              <option value="critical">🔴 Critical</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">Alert Type</label>
+            <select name="type" class="form-select rounded-3">
+              <option value="general">General</option>
+              <option value="evacuation">Evacuation</option>
+              <option value="weather">Weather</option>
+              <option value="health">Health</option>
+              <option value="update">Operation Update</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">State (optional)</label>
+            <select name="state" class="form-select rounded-3">
+              <option value="">All India</option>
+              <% ['Andhra Pradesh','Assam','Bihar','Delhi','Gujarat','Himachal Pradesh','Jammu & Kashmir','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Odisha','Punjab','Rajasthan','Tamil Nadu','Telangana','Uttarakhand','Uttar Pradesh','West Bengal'].forEach(s => { %>
+                <option value="<%= s %>"><%= s %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-500">Linked Incident</label>
+            <select name="incident_id" class="form-select rounded-3">
+              <option value="">None</option>
+              <% incidents.forEach(i => { %>
+                <option value="<%= i.id %>"><%= i.title.slice(0, 50) %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-danger btn-lg w-100 rounded-3 fw-600">
+              <i class="bi bi-broadcast me-2"></i>Broadcast Alert
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

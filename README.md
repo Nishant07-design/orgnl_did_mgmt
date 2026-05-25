@@ -1,166 +1,59 @@
-# 🚨 Suraksha Setu
+![Async Logo](https://raw.githubusercontent.com/caolan/async/master/logo/async-logo_readme.jpg)
 
-**Centralized Emergency Response Platform**
+![Github Actions CI status](https://github.com/caolan/async/actions/workflows/ci.yml/badge.svg)
+[![NPM version](https://img.shields.io/npm/v/async.svg)](https://www.npmjs.com/package/async)
+[![Coverage Status](https://coveralls.io/repos/caolan/async/badge.svg?branch=master)](https://coveralls.io/r/caolan/async?branch=master)
+[![Join the chat at https://gitter.im/caolan/async](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/caolan/async?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/async/badge?style=rounded)](https://www.jsdelivr.com/package/npm/async)
 
-A real-time disaster monitoring and coordination platform built for India. Citizens can report emergencies, authorities can track incidents, broadcast alerts, manage shelters, and guide people to safety — all in one place.
+<!--
+|Linux|Windows|MacOS|
+|-|-|-|
+|[![Linux Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=Linux&configuration=Linux%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master) | [![Windows Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=Windows&configuration=Windows%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master) | [![MacOS Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=OSX&configuration=OSX%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master)| -->
 
----
+Async is a utility module which provides straight-forward, powerful functions for working with [asynchronous JavaScript](http://caolan.github.io/async/v3/global.html). Although originally designed for use with [Node.js](https://nodejs.org/) and installable via `npm i async`, it can also be used directly in the browser.  An ESM/MJS version is included in the main `async` package that should automatically be used with compatible bundlers such as Webpack and Rollup.
 
-## ✨ Features
+A pure ESM version of Async is available as [`async-es`](https://www.npmjs.com/package/async-es).
 
-| Feature | Description |
-|---|---|
-| 🗺️ **Live Incident Map** | Interactive Leaflet map showing all active incidents across India |
-| 📋 **Incident Reporting** | Report floods, earthquakes, cyclones, fires with GPS location |
-| 📊 **Live Dashboard** | Real-time stats, incident table, rescue operations — auto-refreshes via SSE |
-| 🏠 **Shelter Finder** | Find open emergency shelters with capacity, facilities, and contact info |
-| 🔔 **Emergency Alerts** | Admin can broadcast alerts; citizens see live ticker |
-| 🤖 **AI Safety Guide** | Rule-based chatbot in **English & Hindi** for disaster guidance |
-| 🔐 **Authentication** | Register/Login with roles (admin vs citizen) |
-| 📱 **PWA** | Installable on mobile, works offline (cached assets) |
+For Documentation, visit <https://caolan.github.io/async/>
 
----
+*For Async v1.5.x documentation, go [HERE](https://github.com/caolan/async/blob/v1.5.2/README.md)*
 
-## 🚀 Quick Setup
 
-### Prerequisites
-- Node.js >= 18
-- npm
+```javascript
+// for use with Node-style callbacks...
+var async = require("async");
 
-### Install & Run
+var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
+var configs = {};
 
-```bash
-# 1. Clone the repo
-git clone https://github.com/Nishant07-design/disaster-response-platform.git
-cd disaster-response-platform
-
-# 2. Install dependencies
-npm install
-
-# 3. Start the server
-npm start
+async.forEachOf(obj, (value, key, callback) => {
+    fs.readFile(__dirname + value, "utf8", (err, data) => {
+        if (err) return callback(err);
+        try {
+            configs[key] = JSON.parse(data);
+        } catch (e) {
+            return callback(e);
+        }
+        callback();
+    });
+}, err => {
+    if (err) console.error(err.message);
+    // configs is now a map of JSON data
+    doSomethingWith(configs);
+});
 ```
 
-Open **http://localhost:3000**
+```javascript
+var async = require("async");
 
-That's it. The SQLite database is created automatically with Indian demo data on first run.
-
----
-
-## 🔑 Demo Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| Admin (NDRF) | `admin@ndrf.gov.in` | `admin123` |
-| Citizen | `rahul@citizen.in` | `citizen123` |
-
-**Admin** can broadcast alerts, update incident status, and manage shelter occupancy.
-
----
-
-## 📁 Project Structure
-
+// ...or ES2017 async functions
+async.mapLimit(urls, 5, async function(url) {
+    const response = await fetch(url)
+    return response.body
+}, (err, results) => {
+    if (err) throw err
+    // results is now an array of the response bodies
+    console.log(results)
+})
 ```
-disaster-response-platform/
-├── server.js              # Express app entry point
-├── package.json
-├── database/
-│   └── db.js              # SQLite setup + seed data
-├── routes/
-│   ├── auth.js            # Login, register, logout
-│   ├── incidents.js       # Report, list, view incidents
-│   ├── shelters.js        # Shelter listing + occupancy
-│   ├── alerts.js          # Broadcast + SSE real-time stream
-│   └── ai.js              # AI chatbot endpoint
-├── views/
-│   ├── partials/          # Reusable navbar, head, footer
-│   ├── home.ejs           # Landing page
-│   ├── dashboard.ejs      # Live dashboard
-│   ├── map.ejs            # Full incident map
-│   ├── incidents/         # List, report form, detail
-│   ├── shelters/          # Shelter list
-│   ├── alerts/            # Alert list, broadcast form
-│   └── ai/                # AI guide chat UI
-├── public/
-│   ├── css/style.css      # Custom styles
-│   ├── js/app.js          # PWA + navbar JS
-│   ├── sw.js              # Service Worker
-│   ├── manifest.json      # PWA manifest
-│   └── icons/             # App icons
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Node.js + Express |
-| Database | SQLite 3 (via `better-sqlite3`) |
-| Templating | EJS |
-| Frontend | Bootstrap 5 + Bootstrap Icons |
-| Maps | Leaflet.js + OpenStreetMap |
-| Real-time | Server-Sent Events (SSE) |
-| Auth | express-session + bcryptjs |
-| PWA | Service Worker + Web Manifest |
-| Language | English + Hindi |
-
----
-
-## 🌐 Routes
-
-| Route | Description |
-|---|---|
-| `GET /` | Home page |
-| `GET /dashboard` | Live dashboard |
-| `GET /incidents` | Incident list with filters |
-| `GET /incidents/report` | Report form (auth required) |
-| `GET /incidents/:id` | Incident detail |
-| `GET /shelters` | Shelter list |
-| `GET /map` | Interactive map |
-| `GET /alerts` | Alert list |
-| `GET /alerts/broadcast` | Broadcast form (admin only) |
-| `GET /ai-guide` | AI safety guide |
-| `GET /alerts/stream` | SSE stream for real-time updates |
-| `GET /login`, `POST /login` | Authentication |
-| `GET /register`, `POST /register` | Registration |
-| `GET /logout` | Logout |
-
----
-
-## 📱 PWA
-
-The app is a Progressive Web App. To install:
-- **Android**: Chrome → "Add to Home Screen"
-- **Desktop**: Address bar → Install icon
-
----
-
-## 🏗️ Development
-
-```bash
-# Auto-restart on file changes
-npm run dev   # uses nodemon
-```
-
----
-
-## 🇮🇳 Indian Data
-
-- Incidents across Assam, Gujarat, Uttarakhand, Maharashtra, Tamil Nadu, Delhi, MP
-- Shelters in Delhi, Mumbai, Chennai, Odisha, J&K, Assam, Uttarakhand, Gujarat
-- Emergency numbers: 112, NDRF, 101, 108, 1077, IMD hotline
-- Indian states dropdown in all forms
-
----
-
-## 📞 Emergency Contacts
-
-| Service | Number |
-|---|---|
-| National Emergency | **112** |
-| NDRF | **011-24363260** |
-| Fire | **101** |
-| Ambulance | **108** |
-| Disaster Helpline | **1077** |
-| IMD Weather | **1800-180-1717** |
